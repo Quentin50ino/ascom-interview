@@ -42,6 +42,18 @@ function PatientList() {
         type : String,
         isSortedAsc : true
       },
+      {
+        columnId : "nOfParameters",
+        columnName : "N. of parameters",
+        type : Number,
+        isSortedAsc : true
+      },
+      {
+        columnId : "alert",
+        columnName : "Alert",
+        type : Boolean,
+        isSortedAsc : true
+      }
 
     ]
 

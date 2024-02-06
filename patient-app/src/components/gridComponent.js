@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Table from 'react-bootstrap/Table';
 import EditModal from "./editModalComponent";
 import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
 import moment from"moment";
 
 function GridComponent({columns, data, isReadOnly, sendDataToParent}) {
@@ -27,9 +26,12 @@ function GridComponent({columns, data, isReadOnly, sendDataToParent}) {
     }
 
 
-    function filterGrid(searchText, columnType, columnId){
+    function filterGrid(searchText, columnId){
         let filteredData = data.filter((item) => {
-            return item[columnId].toString().toLowerCase().includes(searchText.toLowerCase().trim()) ? true : false;
+            return columnId === "nOfParameters" ? 
+                item.parameters.length.toString().includes(searchText.toLowerCase().trim()) :
+                (columnId === "alert" ? (item.parameters.filter(parameter => parameter.alarm).length !== 0).toString().includes(searchText.toLowerCase().trim())
+                : item[columnId].toString().toLowerCase().includes(searchText.toLowerCase().trim()) ? true : false);
         });
         setDisplayData(filteredData);
     }
@@ -43,8 +45,15 @@ function GridComponent({columns, data, isReadOnly, sendDataToParent}) {
 
     function sortGrid(columnId, columnType, isSortedAsc){
         let sortedData = [...displayData].sort((a, b) => {
-            const A = columnType !== Number && columnType !== Boolean ? a[columnId].toUpperCase() : a[columnId]; 
-            const B = columnType !== Number && columnType !== Boolean ? b[columnId].toUpperCase() : b[columnId];
+            let A = columnType !== Number && columnType !== Boolean ? a[columnId].toUpperCase() : a[columnId]; 
+            let B = columnType !== Number && columnType !== Boolean ? b[columnId].toUpperCase() : b[columnId];
+            if(columnId === "nOfParameters"){
+                A = a.parameters.length;
+                B = b.parameters.length;
+            } else if(columnId === "alert"){
+                A = (a.parameters.filter(parameter => parameter.alarm).length !== 0).toString();
+                B = (b.parameters.filter(parameter => parameter.alarm).length !== 0).toString();
+            }
             if (A < B) {
               return isSortedAsc?-1:1;
             }
@@ -53,7 +62,7 @@ function GridComponent({columns, data, isReadOnly, sendDataToParent}) {
             }
             return 0;
           });
-          let newColumns = columns.map(column => {
+          let newColumns = [...displayedColumns].map(column => {
             if(column.columnId === columnId) {
                 return { ...column, isSortedAsc : !isSortedAsc };
             }
@@ -65,7 +74,7 @@ function GridComponent({columns, data, isReadOnly, sendDataToParent}) {
 
     return (
         <>
-            <Table striped bordered hover responsive> 
+            <Table variant="dark" striped bordered hover responsive> 
                 <thead>
                     <tr>
                         {displayedColumns.map((column => {
@@ -73,28 +82,33 @@ function GridComponent({columns, data, isReadOnly, sendDataToParent}) {
                             <th key={column.columnId}>
                                 {column.columnName}
                                 <div className="d-flex my-2">
-                                    <Form.Control type="text" onChange={(e) => filterGrid(e.target.value, column.type, column.columnId)}/>
-                                    <Button className="ms-2" variant="secondary" onClick={() => sortGrid(column.columnId, column.type, column.isSortedAsc)}>{column.isSortedAsc ?  '↓' : ' ↑'}</Button>
+                                    <Form.Control type="text" onChange={(e) => filterGrid(e.target.value, column.columnId)} placeholder="Search"/>
+                                    <div className="cursor-pointer ms-1" onClick={() => sortGrid(column.columnId, column.type, column.isSortedAsc)}>{column.isSortedAsc ?  
+                                    <img width="32" height="32" src="https://img.icons8.com/external-dashed-line-kawalan-studio/96/40C057/external-sort-descending-shopping-e-commerce-dashed-line-kawalan-studio.png" alt="external-sort-descending-shopping-e-commerce-dashed-line-kawalan-studio"/> :
+                                    <img width="32" height="32" src="https://img.icons8.com/external-dashed-line-kawalan-studio/96/40C057/external-sort-ascending-shopping-e-commerce-dashed-line-kawalan-studio.png" alt="external-sort-ascending-shopping-e-commerce-dashed-line-kawalan-studio"/>}</div>
                                 </div>
                             </th>)
                         }))}
-                        {!isReadOnly && <th>N. of parameters</th>}
-                        {!isReadOnly && <th>Alert</th>}
                     </tr>
                 </thead>
                 <tbody>
                     {
                         displayData.map(item => {
                             return(
-                                <tr onClick={() => openEditModal(item)} key={item.id}> 
+                                <tr className={`${!isReadOnly? 'cursor-pointer' : 'cursor-not-allowed'}`} onClick={() => openEditModal(item)} key={item.id}> 
                                     {columns.map((column => {
                                         return(
                                             <td key={column.columnId}>{ 
-                                            column.columnId !== "birthDate" ? item[column.columnId].toString() : moment(item[column.columnId]).format('DD/MM/YYYY')}</td>
+                                            column.columnId === "birthDate" ?
+                                            moment(item[column.columnId]).format('DD/MM/YYYY') : 
+                                            (column.columnId === "nOfParameters" ? item.parameters.length : 
+                                            (column.columnId === "alert" ? 
+                                            (item.parameters.filter(parameter => parameter.alarm).length !== 0 ? 
+                                            <img width="32" height="32" src="https://img.icons8.com/ios/100/FA5252/error--v1.png" alt="error--v1"/>: 
+                                            <img width="32" height="32" src="https://img.icons8.com/ios/100/40C057/ok--v1.png" alt="ok--v1"/>) : 
+                                            item[column.columnId].toString()))}</td>
                                         )
                                     }))}
-                                    {!isReadOnly && <td>{item.parameters.length}</td>}
-                                    {!isReadOnly && <td>{item.parameters.filter(parameter => parameter.alarm).length !== 0 ? "True" : "False"}</td>}
                                 </tr>
                             )
                         })
