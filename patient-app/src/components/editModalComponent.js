@@ -5,6 +5,7 @@ import Form from 'react-bootstrap/Form';
 import GridComponent from './gridComponent';
 import axios from "axios";
 import Alert from 'react-bootstrap/Alert';
+import moment from"moment";
 
 
 function EditModal({propsShow, sendDataToParent, selectedPatient}) {
@@ -48,6 +49,7 @@ const columns = [
   {
     columnId : "alarm",
     columnName : "Alarm",
+    type : Boolean,
     isSortedAsc : true
   },
 ]
@@ -106,7 +108,7 @@ function editPatient(){
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="exampleForm.ControlInput2">
                     <Form.Label>Birth Date</Form.Label>
-                    <Form.Control type="text"  value={selectedPatient.birthDate} disabled/>
+                    <Form.Control type="text"  value={moment(selectedPatient.birthDate).format('DD/MM/YYYY')} disabled/>
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="exampleForm.ControlInput2">
                     <Form.Label>Sex</Form.Label>
@@ -116,10 +118,15 @@ function editPatient(){
                     <Form.Label>N. of Paramaters</Form.Label>
                     <Form.Control type="text" disabled value={selectedPatient.parameters !== undefined ? selectedPatient.parameters.length : 0}/>
                   </Form.Group>
+                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput2">
+                    <Form.Label>Alert</Form.Label>
+                    <Form.Control type="text" disabled value={selectedPatient.parameters !== undefined ? selectedPatient.parameters.filter(parameter => parameter.alarm).length !== 0 ? "Yes" : "No" : 0}/>
+                  </Form.Group>
                 </Form>
                 <div style={{margin : "30px 0px"}}>
                   <Button style={{fontSize : '20px', padding : '10px 30px', borderRadius : '40px', backgroundColor : '#1DB954'}} variant='success' onClick={() => editPatient()}>Edit</Button>
                 </div>
+                <h3 className='mt-5 mb-3'>Parameters List</h3>
                 <GridComponent columns={columns} data={selectedPatient.parameters} isReadOnly={true}/>
             </Modal.Body>
               <Modal.Footer>

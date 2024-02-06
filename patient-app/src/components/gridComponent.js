@@ -27,9 +27,9 @@ function GridComponent({columns, data, isReadOnly, sendDataToParent}) {
     }
 
 
-    function filterGrid(searchText, columnId){
+    function filterGrid(searchText, columnType, columnId){
         let filteredData = data.filter((item) => {
-            return item[columnId].toLowerCase().includes(searchText.toLowerCase().trim()) ? true : false;
+            return item[columnId].toString().toLowerCase().includes(searchText.toLowerCase().trim()) ? true : false;
         });
         setDisplayData(filteredData);
     }
@@ -43,8 +43,8 @@ function GridComponent({columns, data, isReadOnly, sendDataToParent}) {
 
     function sortGrid(columnId, columnType, isSortedAsc){
         let sortedData = [...displayData].sort((a, b) => {
-            const A = columnType !== Number ? a[columnId].toUpperCase() : a[columnId]; 
-            const B = columnType !== Number ? b[columnId].toUpperCase() : b[columnId];
+            const A = columnType !== Number && columnType !== Boolean ? a[columnId].toUpperCase() : a[columnId]; 
+            const B = columnType !== Number && columnType !== Boolean ? b[columnId].toUpperCase() : b[columnId];
             if (A < B) {
               return isSortedAsc?-1:1;
             }
@@ -72,9 +72,9 @@ function GridComponent({columns, data, isReadOnly, sendDataToParent}) {
                             return(
                             <th key={column.columnId}>
                                 {column.columnName}
-                                <div>
-                                    <Form.Control type="text" onChange={(e) => filterGrid(e.target.value, column.columnId)}/>
-                                    <Button variant="secondary" onClick={() => sortGrid(column.columnId, column.type, column.isSortedAsc)}>{column.isSortedAsc ?  '↓' : ' ↑'}</Button>
+                                <div className="d-flex my-2">
+                                    <Form.Control type="text" onChange={(e) => filterGrid(e.target.value, column.type, column.columnId)}/>
+                                    <Button className="ms-2" variant="secondary" onClick={() => sortGrid(column.columnId, column.type, column.isSortedAsc)}>{column.isSortedAsc ?  '↓' : ' ↑'}</Button>
                                 </div>
                             </th>)
                         }))}
@@ -89,22 +89,19 @@ function GridComponent({columns, data, isReadOnly, sendDataToParent}) {
                                 <tr onClick={() => openEditModal(item)} key={item.id}> 
                                     {columns.map((column => {
                                         return(
-                                            <td key={column.columnId}>{ typeof item[column.columnId] !== "boolean" ? 
-                                            (column.columnId !== "birthDate" ? item[column.columnId] : moment(item[column.columnId]).format('MM/DD/YYYY')): 
-                                            (item[column.columnId] ? "Yes" : "No")}</td>
+                                            <td key={column.columnId}>{ 
+                                            column.columnId !== "birthDate" ? item[column.columnId].toString() : moment(item[column.columnId]).format('DD/MM/YYYY')}</td>
                                         )
                                     }))}
                                     {!isReadOnly && <td>{item.parameters.length}</td>}
-                                    {!isReadOnly && <td>{item.parameters.filter(parameter => parameter.alarm).length !== 0 ? "Yes" : "No"}</td>}
+                                    {!isReadOnly && <td>{item.parameters.filter(parameter => parameter.alarm).length !== 0 ? "True" : "False"}</td>}
                                 </tr>
                             )
                         })
                     }
                 </tbody>
-
             </Table>
             <EditModal propsShow={showAlert} sendDataToParent={handleDataFromChild} selectedPatient={selectedPatient}/>
-
         </>
     );
 }

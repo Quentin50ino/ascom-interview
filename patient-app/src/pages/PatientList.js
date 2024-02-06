@@ -63,7 +63,7 @@ function PatientList() {
 
       return (
         <>
-          <h2>Patient List</h2>
+          <h2 class="my-5">Patients List</h2>
           <GridComponent columns={columns} data={data} sendDataToParent={handleDataFromChild}/>
         </>
       )
