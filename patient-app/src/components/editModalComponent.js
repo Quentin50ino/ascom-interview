@@ -31,22 +31,24 @@ const columns = [
   {
     columnId : "id",
     columnName : "ID",
-    isSortedDesc : true
+    type : Number,
+    isSortedAsc : true
   },
   {
     columnId : "name",
     columnName : "Name",
-    isSortedDesc : true
+    isSortedAsc : true
   },
   {
     columnId : "value",
     columnName : "Value",
-    isSortedDesc : true
+    type : Number,
+    isSortedAsc : true
   },
   {
     columnId : "alarm",
     columnName : "Alarm",
-    isSortedDesc : true
+    isSortedAsc : true
   },
 ]
 
@@ -86,7 +88,7 @@ function editPatient(){
     <>
             <Modal show={show} onHide={() => closeModal()} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
             <Modal.Header closeButton> 
-              <Modal.Title>Patient Detaiils</Modal.Title>
+              <Modal.Title>Patient Details</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <Form>
@@ -115,10 +117,12 @@ function editPatient(){
                     <Form.Control type="text" disabled value={selectedPatient.parameters !== undefined ? selectedPatient.parameters.length : 0}/>
                   </Form.Group>
                 </Form>
+                <div style={{margin : "30px 0px"}}>
+                  <Button style={{fontSize : '20px', padding : '10px 30px', borderRadius : '40px', backgroundColor : '#1DB954'}} variant='success' onClick={() => editPatient()}>Edit</Button>
+                </div>
                 <GridComponent columns={columns} data={selectedPatient.parameters} isReadOnly={true}/>
             </Modal.Body>
               <Modal.Footer>
-                <Button style={{fontSize : '20px', padding : '10px 30px', borderRadius : '40px', backgroundColor : '#1DB954'}} variant='success' onClick={() => editPatient()}>Edit</Button>
               </Modal.Footer>
           </Modal>
           {showAlert && 

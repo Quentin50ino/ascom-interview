@@ -16,27 +16,31 @@ function PatientList() {
       {
         columnId : "id",
         columnName : "ID",
-        isSortedDesc : true
+        type : Number,
+        isSortedAsc : true
       },
       {
         columnId : "familyName",
         columnName : "Family Name",
-        isSortedDesc : true
+        type : String,
+        isSortedAsc : true
       },
       {
         columnId : "givenName",
         columnName : "Given Name",
-        isSortedDesc : true
+        type : String,
+        isSortedAsc : true
       },
       {
         columnId : "birthDate",
         columnName : "Birth Date",
-        isSortedDesc : true
+        isSortedAsc : true
       },
       {
         columnId : "sex",
         columnName : "Sex",
-        isSortedDesc : true
+        type : String,
+        isSortedAsc : true
       },
 
     ]
@@ -57,7 +61,13 @@ function PatientList() {
       getPatientList();
     }, []);
 
-      return <GridComponent columns={columns} data={data} sendDataToParent={handleDataFromChild}/>;
+      return (
+        <>
+          <h2>Patient List</h2>
+          <GridComponent columns={columns} data={data} sendDataToParent={handleDataFromChild}/>
+        </>
+      )
+      ;
 }
 
 export default PatientList;
