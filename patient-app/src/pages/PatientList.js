@@ -1,85 +1,40 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import GridComponent from "../components/gridComponent";
+import patientTableColumns from "../models/patientTableColumns";
+import endpoints from "../endpoints/endpoints";
 
 function PatientList() {
+  const columns = patientTableColumns;
+  const [data, setData] = useState([]);
 
-  function handleDataFromChild(data){
-    if(data.refreshPage){
+  useEffect(() => {
+    getPatientList();
+  }, []);
+
+  const getPatientList = async () => {
+    const result = await axios.get(endpoints.GET_LIST, {
+      auth: endpoints.AUTH,
+    });
+    setData(result.data);
+  };
+
+  const handleDataFromChild = (data) => {
+    if (data.refreshPage) {
       getPatientList();
     }
-  }
+  };
 
-    // data state to store the TV Maze API data. Its initial value is an empty array
-    const [data, setData] = useState([]);
-    const columns = [
-      {
-        columnId : "id",
-        columnName : "ID",
-        type : Number,
-        isSortedAsc : true
-      },
-      {
-        columnId : "familyName",
-        columnName : "Family Name",
-        type : String,
-        isSortedAsc : true
-      },
-      {
-        columnId : "givenName",
-        columnName : "Given Name",
-        type : String,
-        isSortedAsc : true
-      },
-      {
-        columnId : "birthDate",
-        columnName : "Birth Date",
-        isSortedAsc : true
-      },
-      {
-        columnId : "sex",
-        columnName : "Sex",
-        type : String,
-        isSortedAsc : true
-      },
-      {
-        columnId : "nOfParameters",
-        columnName : "N. of parameters",
-        type : Number,
-        isSortedAsc : true
-      },
-      {
-        columnId : "alert",
-        columnName : "Alert",
-        type : Boolean,
-        isSortedAsc : true
-      }
-
-    ]
-
-    async function getPatientList(){
-      const result = await axios.get("https://mobile.digistat.it/CandidateApi/Patient/GetList", 
-      {
-          auth : {
-              username : 'test',
-              password : 'TestMePlease!'
-          }
-      });
-      setData(result.data);
-    }
-
-    // Using useEffect to call the API once mounted and set the data
-    useEffect(() => {
-      getPatientList();
-    }, []);
-
-      return (
-        <>
-          <h2 class="my-5">Patients List</h2>
-          <GridComponent columns={columns} data={data} sendDataToParent={handleDataFromChild}/>
-        </>
-      )
-      ;
+  return (
+    <div className="px-5 d-flex flex-column justify-content-center">
+      <h2 className="my-5">Patients List</h2>
+      <GridComponent
+        columns={columns}
+        data={data}
+        sendDataToParent={handleDataFromChild}
+      />
+    </div>
+  );
 }
 
 export default PatientList;

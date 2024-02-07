@@ -1,10 +1,10 @@
-import './App.css';
-import PatientList from './pages/PatientList';
+import "./App.css";
+import PatientList from "./pages/PatientList";
 
 function App() {
   return (
     <div className="App">
-      <PatientList/>
+      <PatientList />
     </div>
   );
 }
