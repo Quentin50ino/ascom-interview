@@ -4,11 +4,13 @@ import GridComponent from "../components/gridComponent";
 import patientTableColumns from "../models/patientTableColumns";
 import endpoints from "../endpoints/endpoints";
 import Spinner from 'react-bootstrap/Spinner';
+import Alert from "react-bootstrap/Alert";
 
 function PatientList() {
   const columns = patientTableColumns;
   const [data, setData] = useState([]);
   const [showSpinner, setShowSpinner] = useState();
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     getPatientList();
@@ -26,6 +28,7 @@ function PatientList() {
   const handleDataFromChild = (data) => {
     if (data.refreshPage) {
       getPatientList();
+      setShowAlert(true);
     }
   };
 
@@ -38,6 +41,15 @@ function PatientList() {
           data={data}
           sendDataToParent={handleDataFromChild}
         />
+        {showAlert && (
+          <Alert
+            key={'success'}
+            variant={'success'}
+            onClose={() => setShowAlert(false)}
+            dismissible>
+              Patient edited successfully!
+          </Alert>
+        )}
       </div>
     );
   } else {

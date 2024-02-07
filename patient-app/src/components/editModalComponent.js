@@ -16,7 +16,6 @@ function EditModal({ propsShow, sendDataToParent, selectedPatient }) {
   let [familyName, setFamilyName] = useState("");
   let [givenName, setGivenName] = useState("");
   let [sex, setSex] = useState("");
-  let [variant, setVariant] = useState("");
   let disabledButton =
     (familyName === selectedPatient.familyName &&
       givenName === selectedPatient.givenName &&
@@ -50,11 +49,8 @@ function EditModal({ propsShow, sendDataToParent, selectedPatient }) {
     });
     if (result.status === 200) {
       sendDataToParent({ refreshPage: true });
-      setVariant("success");
-      setShowAlert(true);
     } else {
-      sendDataToParent({ refreshPage: true });
-      setVariant("danger");
+      sendDataToParent({ closeModal: true });
       setShowAlert(true);
     }
   };
@@ -181,17 +177,12 @@ function EditModal({ propsShow, sendDataToParent, selectedPatient }) {
       </Modal>
       {showAlert && (
         <Alert
-          key={variant}
-          variant={variant}
+          key={'danger'}
+          variant={'danger'}
           onClose={() => setShowAlert(false)}
-          dismissible
-        >
-          {variant === "success"
-            ? "Patient edited successfully"
-            : variant === "danger"
-            ? "Something went wrong. Please try again"
-            : null}
-        </Alert>
+          dismissible>
+            Something went wrong. Please try again
+          </Alert>
       )}
     </>
   );
