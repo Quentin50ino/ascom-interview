@@ -14,6 +14,7 @@ const patientTableColumns = [
   {
     columnId: "birthDate",
     columnName: "Birth Date",
+    type: String,
     isSortedAsc: true,
   },
   {
